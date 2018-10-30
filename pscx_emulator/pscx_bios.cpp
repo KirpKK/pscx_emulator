@@ -2,7 +2,9 @@
 
 #include <fstream>
 #include <iterator>
+#include <iostream>
 
+using namespace std;
 //------------------------------------------------
 // TODO : to implement the loadBios function.
 // It should load the BIOS binary file into array of bytes u8 (m_data).
@@ -23,10 +25,43 @@
 //                      "Invalid_BIOS_size"))
 //    } 
 //--------------------------------------------------
-Bios::BiosState Bios::loadBios(std::string path)
+Bios::BiosState Bios::loadBios(string path)
 {
 	// Fixme
-	return BIOS_STATE_INVALID_BIOS_SIZE;
+		//The file is open with the ios::ate flag, which means that the get pointer will be positioned at the end of the file.
+		ifstream input(path, ios::binary | ios::ate);
+	
+		if (input.is_open()) {
+
+			//Call tellg() to get the size of the file (pointer is at the end of the file).
+			int size = input.tellg();
+			if (size == Bios::m_range.m_length) {
+				
+				int s = sizeof(uint8_t);
+				vector<uint8_t> m_data(size/s);
+
+				for (int count = 0; size > s; count++, size = size - s) {
+
+					input.seekg(count * s, ios::beg);
+					uint8_t &val = m_data[count];
+					input.read(reinterpret_cast<char*> (&val), s);
+					m_data[count] = val;
+
+				}
+				
+				Bios::m_data = m_data;
+
+				input.close();
+				return BIOS_STATE_SUCCESS;
+			}
+			else {
+				input.close();
+				return BIOS_STATE_INVALID_BIOS_SIZE;
+			}
+		}
+		else {
+			return BIOS_STATE_INCORRECT_FILENAME;
+		}
 }
 
 uint32_t Bios::load32(uint32_t offset)

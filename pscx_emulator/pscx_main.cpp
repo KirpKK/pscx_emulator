@@ -6,7 +6,7 @@
 
 int main()
 {
-	std::string biosPath = "roms/SCPH1001.BIN";
+	std::string biosPath = "roms/BIOS.BIN";
 
 	Bios bios;
 	Bios::BiosState state = bios.loadBios(biosPath);
@@ -26,5 +26,5 @@ int main()
 
 	while (cpu.runNextInstuction() != Cpu::INSTRUCTION_TYPE_UNKNOWN);
 
-	return EXIT_SUCCESS;
+	return 0;
 }

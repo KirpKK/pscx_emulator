@@ -29,7 +29,13 @@ struct Range
 	bool contains(uint32_t addr, uint32_t &offset)
 	{
 		// Fixme
-		return false;
+		if ((addr >= m_start) && (addr < m_start + m_length)) {
+			offset = addr - m_start;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	uint32_t m_start, m_length;

@@ -20,11 +20,7 @@ Cpu::InstructionType Cpu::decodeAndExecute(Instruction instruction)
 	switch (instruction.getInstructionCode())
 	{
 	case /*LUI*/0b001111:
-		//---------------------------------
-		// TODO : call LUI instruction.
-		// Rust:
-		// 0b001111 => self.op_lui(instruction)
-		//---------------------------------
+		instructionType = opcodeLUI(instruction);
 		break;
 	case /*ORI*/0b001101:
 		instructionType = opcodeORI(instruction);
@@ -44,44 +40,22 @@ Cpu::InstructionType Cpu::decodeAndExecute(Instruction instruction)
 // It should fetch an instruction at program counter (PC) register,
 // increment PC to point to the next instruction and
 // execute instruction.
-// 
-// Rust:
-// pub fn run_next instruction(&mut self) {
-//     let pc = self.pc;
-//
-//     Fetch instruction at PC
-//     let instruction = self.load32(pc);
-//
-//     Increment PC to point to the next instruction.
-//     self.pc = pc.wrapping_add(4);
-//
-//     self.decode_and_execute(instruction);
-// }
-//----------------------------------------------
 Cpu::InstructionType Cpu::runNextInstuction()
 { 
 	// Fixme
-	return INSTRUCTION_TYPE_UNKNOWN;
+	Instruction instruction = Cpu::load32(Cpu::m_pc);
+	Cpu::m_pc = Cpu::m_pc + 4;
+	return Cpu::decodeAndExecute(instruction);
 }
 
 //--------------------------------------------------------------
 // TODO : to implement the Load Upper Immediate function (LUI).
 // It should load the immediate value into the high 16 bits of the target register.
-//
-// Rust:
-// fn op_lui(&mut self, instruction: Instruction)
-//     let i = instruction.imm();  load immediate value
-//     let t = instruction.t();    load target register
-//
-//     Low 16 bits are set to 0
-//     let v = i << 16;
-//
-//     self.set_reg(t, v);
-// }
-//---------------------------------------------------------------
 Cpu::InstructionType Cpu::opcodeLUI(Instruction instruction)
 {
 	// Fixme
+	setRegisterValue(instruction.getRegisterTargetIndex(), instruction.getImmediateValue() << 16);
+
 	return INSTRUCTION_TYPE_LUI;
 }
 
