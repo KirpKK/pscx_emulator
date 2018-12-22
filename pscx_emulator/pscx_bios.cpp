@@ -5,29 +5,9 @@
 #include <iostream>
 
 using namespace std;
-//------------------------------------------------
-// TODO : to implement the loadBios function.
-// It should load the BIOS binary file into array of bytes u8 (m_data).
-//
-// Rust:
-// pub fn new(path: &Path) -> Result<Bios> {
-//    let file = try!(File::open(path));
-//
-//    let mut data = Vec::new();
-//
-//    Load the BIOS
-//    try!(file.take(BIOS_SIZE).read_to_end(&mut data));
-//
-//    if data.len() == BIOS_SIZE as usize {
-//       Ok(Bios { data: data })
-//    } else {
-//       Err(Error::new(ErrorKind::InvalidInput,
-//                      "Invalid_BIOS_size"))
-//    } 
-//--------------------------------------------------
-Bios::BiosState Bios::loadBios(string path)
+// load the BIOS binary file into array of bytes u8 (m_data).
+Bios::BiosState Bios::loadBios(std::string path)
 {
-	// Fixme
 		//The file is open with the ios::ate flag, which means that the get pointer will be positioned at the end of the file.
 		ifstream input(path, ios::binary | ios::ate);
 	
@@ -35,7 +15,7 @@ Bios::BiosState Bios::loadBios(string path)
 
 			//Call tellg() to get the size of the file (pointer is at the end of the file).
 			int size = input.tellg();
-			if (size == Bios::m_range.m_length) {
+			if (size == 512 * 1024) {
 				
 				int s = sizeof(uint8_t);
 				vector<uint8_t> m_data(size/s);
@@ -64,7 +44,7 @@ Bios::BiosState Bios::loadBios(string path)
 		}
 }
 
-uint32_t Bios::load32(uint32_t offset)
+uint32_t Bios::load32(uint32_t offset) const
 {
 	uint32_t b0 = m_data[offset + 0];
 	uint32_t b1 = m_data[offset + 1];
@@ -72,4 +52,9 @@ uint32_t Bios::load32(uint32_t offset)
 	uint32_t b3 = m_data[offset + 3];
 
 	return b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
+}
+
+uint8_t Bios::load8(uint32_t offset) const
+{
+	return m_data[offset];
 }
