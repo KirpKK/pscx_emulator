@@ -44,6 +44,15 @@ void Cpu::store8(uint32_t addr, uint8_t value)
 // TODO: take a look how to get back error messages.
 Cpu::InstructionType Cpu::decodeAndExecute(const Instruction& instruction)
 {
+	m_counter++;
+	if (m_counter == 17503) {
+ 		return INSTRUCTION_TYPE_UNKNOWN;
+	}
+//	if (instruction.getRegisterTargetIndex().m_index == ) {
+//		m_counter++;
+//		m_counter--;
+//	}
+
 	InstructionType instructionType = INSTRUCTION_TYPE_UNKNOWN;
 
 	switch (instruction.getInstructionCode())
@@ -236,7 +245,8 @@ Cpu::InstructionType Cpu::opcodeADDIU(const Instruction& instruction)
 	// Fixme
 	RegisterIndex registerSourceIndex = instruction.getRegisterSourceIndex();
 	RegisterIndex registerTargetIndex = instruction.getRegisterTargetIndex();
-	setRegisterValue(registerTargetIndex, getRegisterValue(registerSourceIndex) + instruction.getSignExtendedImmediateValue());
+	uint32_t value = getRegisterValue(registerSourceIndex) + instruction.getSignExtendedImmediateValue();
+	setRegisterValue(registerTargetIndex, value);
 	return INSTRUCTION_TYPE_ADDIU;
 }
 
@@ -611,12 +621,19 @@ Cpu::InstructionType Cpu::opcodeJR(const Instruction& instruction)
 Cpu::InstructionType Cpu::opcodeLB(const Instruction& instruction)
 {
 	// Fixme
+	if (m_sr & 0x10000 != 0)
+	{
+		// Cache is isolated, ignore write
+		LOG("Ignoring load while cache is isolated");
+		return INSTRUCTION_TYPE_CACHE_ISOLATED;
+	}
+
 	uint32_t signExtendedValue = instruction.getSignExtendedImmediateValue();
-	RegisterIndex registerSourceIndex = instruction.getRegisterSourceIndex();
 	RegisterIndex registerTargetIndex = instruction.getRegisterTargetIndex();
+	RegisterIndex registerSourceIndex = instruction.getRegisterSourceIndex();
 	uint32_t addr = getRegisterValue(registerSourceIndex) + signExtendedValue;
 	Instruction value = load8(addr);
-	Instruction::InstructionStatus status = instruction.getInstructionStatus();
+	Instruction::InstructionStatus status = value.getInstructionStatus();
 	if (status == Instruction::INSTRUCTION_STATUS_UNALIGNED_ACCESS || status == Instruction::INSTRUCTION_STATUS_UNHANDLED_FETCH)
 	{
 		return INSTRUCTION_TYPE_UNKNOWN;

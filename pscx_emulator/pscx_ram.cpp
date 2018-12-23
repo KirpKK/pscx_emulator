@@ -31,5 +31,15 @@ uint32_t Ram::load32(uint32_t offset) const
 //--------------------------------------------------------------
 void Ram::store32(uint32_t offset, uint32_t value)
 {
-	// Fixme
+	size_t addr_value = (size_t)offset;
+
+	uint8_t b0 = (uint8_t)value;
+	uint8_t b1 = (uint8_t)(value >> 8);
+	uint8_t b2 = (uint8_t)(value >> 16);
+	uint8_t b3 = (uint8_t)(value >> 24);
+
+	m_data[addr_value + 0] = b0;
+	m_data[addr_value + 1] = b1;
+	m_data[addr_value + 2] = b2;
+	m_data[addr_value + 3] = b3;
 }

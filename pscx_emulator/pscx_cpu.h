@@ -16,7 +16,8 @@ struct Cpu
 		m_nextInstruction(0x0), // NOP
 		m_inter(inter),
 		m_sr(0x0),
-		m_load(RegisterIndex(0x0), 0x0)
+		m_load(RegisterIndex(0x0), 0x0),
+		m_counter(0)
 	{
 		// Reset registers values to 0xdeadbeef
 		memset(m_regs, 0xdeadbeef, sizeof(m_regs));
@@ -107,6 +108,8 @@ private:
 
 	// Memory interface
 	Interconnect m_inter;
+
+	uint32_t m_counter;
 
 	// Array for storing instructions for logging
 	std::vector<uint32_t> m_debugInstructions;
